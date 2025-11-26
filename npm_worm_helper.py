@@ -26,28 +26,46 @@ from pathlib import Path
 # (setup_bun.js + bun_environment.js + TruffleHog-based harvesting)
 
 FILE_INDICATORS = [
+    # Core payload & loader
     "bun_environment.js",
     "setup_bun.js",
+
+    # TruffleHog binaries downloaded into the malware cache
+    ".truffler-cache/trufflehog",
+    ".truffler-cache/trufflehog.exe",
+
+    # Exfiltration JSONs described in public analyses
+    # (location can vary, so we match by basename)
     "cloud.json",
     "contents.json",
     "environment.json",
+    "actionsSecrets.json",
     "truffleSecrets.json",
-    ".truffler-cache/trufflehog",
-    ".truffler-cache/trufflehog.exe",
 ]
 
 DIR_INDICATORS = [
+    # Worm’s TruffleHog cache locations
     ".truffler-cache",
     ".truffler-cache/extract",
 ]
 
 CMD_INDICATORS = [
+    # Destructive “dead man’s switch” commands
     'del /F /Q /S "%USERPROFILE%\\*"',   # aggressive wipe (Windows)
-    "shred -uvz -n 1",                   # destructive shred (Linux/macOS)
+    "shred -uvz -n 1",                   # secure shred (Linux/macOS)
     "cipher /W:%USERPROFILE%",           # free-space wipe (Windows)
+
+    # Bun installer chain used by setup_bun.js
     "curl -fsSL https://bun.sh/install | bash",
-    'irm bun.sh/install.ps1|iex',
-    'bun.sh/install.ps1|iex',
+    "curl -fsSL https://bun.sh/install | sh",
+
+    # PowerShell Bun installer / execution
+    "bun.sh/install.ps1|iex",
+    "irm bun.sh/install.ps1",            # catches variants like: powershell -c \"irm bun.sh/install.ps1|iex\"
+
+    # Direct execution of the loader/payload
+    "node setup_bun.js",
+    "bun_environment.js",
 ]
 
 HISTORY_FILES = [
