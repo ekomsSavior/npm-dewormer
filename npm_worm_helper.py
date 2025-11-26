@@ -3,7 +3,6 @@
 npm_worm_helper.py
 
 Local helper for the current Shai-Hulud npm worm campaign.
-- Always runs a scan on start.
 - If indicators are found, it PROMPTS the user to optionally quarantine them.
 - Always writes a text report to ./reports/npm_worm_scan_<timestamp>.txt
 
